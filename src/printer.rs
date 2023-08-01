@@ -78,7 +78,7 @@ impl Printer {
         let formatter = Formatter::new(font_and_width.1);
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
-            PrinterConnectionData::Usb{vendor_id, product_id, endpoint, timeout} => {
+            PrinterConnectionData::Usb{vendor_id, product_id, endpoint, endpoint_r: _, timeout} => {
                 let context = Context::new().map_err(Error::RusbError)?;
         
                 let devices = context.devices().map_err(Error::RusbError)?;
@@ -107,6 +107,30 @@ impl Printer {
                             } else {
                                 return Err(Error::NoBulkEndpoint);
                             }
+
+                        };
+
+                        let actual_endpoint_r = if let Some(endpoint_r) = endpoint {
+                            endpoint_r
+                        } else {
+                            let mut detected_endpoint_r: Option<u8> = None;
+                            // Horrible to have 3 nested for, but so be it
+                            for interface in config_descriptor.interfaces() {
+                                for descriptor in interface.descriptors() {
+                                    for endpoint in descriptor.endpoint_descriptors() {
+                                        if let (TransferType::Bulk, Direction::In) = (endpoint.transfer_type(), endpoint.direction()) {
+                                            detected_endpoint_r = Some(endpoint.number());   
+                                        }
+                                    }
+                                }
+                            }
+            
+                            if let Some(detected_endpoint_r) = detected_endpoint_r {
+                                detected_endpoint_r
+                            } else {
+                                return Err(Error::NoBulkEndpoint);
+                            }
+
                         };
         
                         // Now we continue opening the device
@@ -132,7 +156,7 @@ impl Printer {
                                 return Ok(Some(Printer {
                                     printer_connection: PrinterConnection::Usb {
                                         endpoint: actual_endpoint,
-                                        endpoint_r: 0,
+                                        endpoint_r: actual_endpoint_r,
                                         dh,
                                         timeout
                                     },

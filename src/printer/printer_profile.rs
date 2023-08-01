@@ -17,6 +17,8 @@ pub enum PrinterConnectionData {
         product_id: u16,
         /// Endpoint where the usb data is meant to be written to
         endpoint: Option<u8>,
+        /// Endpoint where the usb data is meant to be read from
+        endpoint_r: Option<u8>,
         /// Timeout for bulk write operations
         timeout: std::time::Duration
     },
@@ -109,6 +111,7 @@ impl PrinterProfileBuilder {
                 vendor_id,
                 product_id,
                 endpoint: None,
+                endpoint_r: None,
                 timeout: std::time::Duration::from_secs(2)
             },
             columns_per_font: vec![(Font::FontA, 32)].into_iter().collect(),
