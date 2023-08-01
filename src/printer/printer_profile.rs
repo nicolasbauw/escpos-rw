@@ -155,6 +155,25 @@ impl PrinterProfileBuilder {
         }
     }
 
+    /// Sets the usb endpoint from which the data will be read.
+    ///
+    /// ```rust
+    /// use escpos_rs::PrinterProfileBuilder;
+    /// // Creates the printer details with the endpoint 0x82
+    /// let printer_profile = PrinterProfileBuilder::new_usb(0x0001, 0x0001)
+    ///     .with_read_endpoint(0x82).unwrap()
+    ///     .build();
+    /// ```
+    pub fn with_read_endpoint(mut self, endpoint_r: u8) -> Result<PrinterProfileBuilder, Error> {
+        match &mut self.printer_connection_data {
+            PrinterConnectionData::Usb{endpoint_r: self_endpoint, ..} => {
+                *self_endpoint = Some(endpoint_r);
+                Ok(self)
+            },
+            _other => Err(Error::UnsupportedForPrinterConnection)
+        }
+    }
+
     /// Adds a specific pixel width for the printer (required for printing images)
     ///
     /// Defaults to 384, usually for 58mm printers.
