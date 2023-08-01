@@ -96,7 +96,7 @@ impl Printer {
                                 for descriptor in interface.descriptors() {
                                     for endpoint in descriptor.endpoint_descriptors() {
                                         if let (TransferType::Bulk, Direction::Out) = (endpoint.transfer_type(), endpoint.direction()) {
-                                            detected_endpoint = Some(endpoint.number());   
+                                            detected_endpoint = Some(endpoint.address());   
                                         }
                                     }
                                 }
