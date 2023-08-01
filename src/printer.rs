@@ -16,7 +16,7 @@ use crate::{
 extern crate codepage_437;
 extern crate log;
 
-use log::{warn};
+use log::warn;
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
 use codepage_437::{IntoCp437, CP437_CONTROL};
 
@@ -305,6 +305,21 @@ impl Printer {
                     *timeout
                 ).map_err(Error::RusbError)?;
                 Ok(())
+            },
+            _other => panic!("Unimplemented")
+        }
+    }
+
+    pub fn read_raw(&self) -> Result<[u8; 20], Error> {
+        match &self.printer_connection {
+            PrinterConnection::Usb{endpoint, dh, timeout} => {
+                let mut buffer: [u8; 20] = [0; 20];
+                dh.read_bulk(
+                    *endpoint,
+                    &mut buffer,
+                    *timeout
+                ).map_err(Error::RusbError)?;
+                Ok(buffer)
             },
             _other => panic!("Unimplemented")
         }
