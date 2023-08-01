@@ -78,7 +78,7 @@ impl Printer {
         let formatter = Formatter::new(font_and_width.1);
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
-            PrinterConnectionData::Usb{vendor_id, product_id, endpoint, endpoint_r: _, timeout} => {
+            PrinterConnectionData::Usb{vendor_id, product_id, endpoint, endpoint_r, timeout} => {
                 let context = Context::new().map_err(Error::RusbError)?;
         
                 let devices = context.devices().map_err(Error::RusbError)?;
@@ -110,7 +110,7 @@ impl Printer {
 
                         };
 
-                        let actual_endpoint_r = if let Some(endpoint_r) = endpoint {
+                        let actual_endpoint_r = if let Some(endpoint_r) = endpoint_r {
                             endpoint_r
                         } else {
                             let mut detected_endpoint_r: Option<u8> = None;
@@ -119,7 +119,7 @@ impl Printer {
                                 for descriptor in interface.descriptors() {
                                     for endpoint in descriptor.endpoint_descriptors() {
                                         if let (TransferType::Bulk, Direction::In) = (endpoint.transfer_type(), endpoint.direction()) {
-                                            detected_endpoint_r = Some(endpoint.number());   
+                                            detected_endpoint_r = Some(endpoint.address());
                                         }
                                     }
                                 }
