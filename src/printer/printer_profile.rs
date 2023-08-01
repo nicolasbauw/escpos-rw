@@ -16,7 +16,7 @@ pub enum PrinterConnectionData {
         /// product id for the printer
         product_id: u16,
         /// Endpoint where the usb data is meant to be written to
-        endpoint: Option<u8>,
+        endpoint_w: Option<u8>,
         /// Endpoint where the usb data is meant to be read from
         endpoint_r: Option<u8>,
         /// Timeout for bulk write operations
@@ -110,7 +110,7 @@ impl PrinterProfileBuilder {
             printer_connection_data: PrinterConnectionData::Usb {
                 vendor_id,
                 product_id,
-                endpoint: None,
+                endpoint_w: None,
                 endpoint_r: None,
                 timeout: std::time::Duration::from_secs(2)
             },
@@ -147,7 +147,7 @@ impl PrinterProfileBuilder {
     /// ```
     pub fn with_endpoint(mut self, endpoint: u8) -> Result<PrinterProfileBuilder, Error> {
         match &mut self.printer_connection_data {
-            PrinterConnectionData::Usb{endpoint: self_endpoint, ..} => {
+            PrinterConnectionData::Usb{endpoint_w: self_endpoint, ..} => {
                 *self_endpoint = Some(endpoint);
                 Ok(self)
             },

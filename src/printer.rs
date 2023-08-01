@@ -78,7 +78,7 @@ impl Printer {
         let formatter = Formatter::new(font_and_width.1);
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
-            PrinterConnectionData::Usb{vendor_id, product_id, endpoint, endpoint_r, timeout} => {
+            PrinterConnectionData::Usb{vendor_id, product_id, endpoint_w, endpoint_r, timeout} => {
                 let context = Context::new().map_err(Error::RusbError)?;
         
                 let devices = context.devices().map_err(Error::RusbError)?;
@@ -87,8 +87,8 @@ impl Printer {
                     if s.vendor_id() == vendor_id && s.product_id() == product_id {
                         // Before opening the device, we must find the bulk endpoint
                         let config_descriptor = device.active_config_descriptor().map_err(Error::RusbError)?;
-                        let actual_endpoint = if let Some(endpoint) = endpoint {
-                            endpoint
+                        let actual_endpoint = if let Some(endpoint_w) = endpoint_w {
+                            endpoint_w
                         } else {
                             let mut detected_endpoint: Option<u8> = None;
                             // Horrible to have 3 nested for, but so be it

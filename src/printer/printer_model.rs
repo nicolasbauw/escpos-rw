@@ -22,14 +22,14 @@ impl PrinterModel {
 
     /// Obtain the details to connect to a printer model through usb
     pub fn usb_profile(&self) -> PrinterProfile {
-        let (vendor_id, product_id, endpoint, endpoint_r) = self.vp_id();
+        let (vendor_id, product_id, endpoint_w, endpoint_r) = self.vp_id();
         match self {
             PrinterModel::ZKTeco => {
                 PrinterProfile {
                     printer_connection_data: PrinterConnectionData::Usb {
                         vendor_id,
                         product_id,
-                        endpoint,
+                        endpoint_w,
                         endpoint_r,
                         timeout: std::time::Duration::from_secs(2)
                     },
@@ -42,7 +42,7 @@ impl PrinterModel {
                     printer_connection_data: PrinterConnectionData::Usb {
                         vendor_id,
                         product_id,
-                        endpoint,
+                        endpoint_w,
                         endpoint_r,
                         timeout: std::time::Duration::from_secs(2)
                     },
