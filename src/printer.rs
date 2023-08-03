@@ -320,7 +320,7 @@ impl Printer {
     /// use escpos_rs::{Printer,PrinterProfile};
     /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
     /// let printer = Printer::new(printer_profile).unwrap().unwrap();
-    /// printer.raw(&[0x01, 0x02])?;
+    /// printer.write_raw(&[0x01, 0x02])?;
     /// # Ok::<(), escpos_rs::Error>(())
     /// ```
     pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
@@ -337,6 +337,15 @@ impl Printer {
         }
     }
 
+    /// Reads raw information from the printer
+    ///
+    /// ```rust,no_run
+    /// use escpos_rs::{Printer,PrinterProfile};
+    /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
+    /// let printer = Printer::new(printer_profile).unwrap().unwrap();
+    /// let buffer = printer.read_raw()?;
+    /// # Ok::<(), escpos_rs::Error>(())
+    /// ```
     pub fn read_raw(&self) -> Result<[u8; 20], Error> {
         match &self.printer_connection {
             PrinterConnection::Usb{endpoint: _, endpoint_r,dh, timeout} => {
