@@ -214,7 +214,7 @@ impl Printer {
     /// You can pass optional printer data to the printer to fill in the dynamic parts of the instruction.
     pub fn instruction(&self, instruction: &Instruction, print_data: Option<&PrintData>) -> Result<(), Error> {
         let content = instruction.to_vec(&self.printer_profile, print_data)?;
-        self.raw(&content)
+        self.write_raw(&content)
     }
     
     /// Print some text.
@@ -229,7 +229,7 @@ impl Printer {
         match self.printer_connection {
             PrinterConnection::Usb{..} => {
                 let feed = content.into_cp437(&CP437_CONTROL).map_err(|e| Error::CP437Error(e.into_string()))?;
-                self.raw(&feed)
+                self.write_raw(&feed)
             },
             PrinterConnection::Network => panic!("Unimplemented!"),
             PrinterConnection::Terminal => {
@@ -269,12 +269,12 @@ impl Printer {
     /// Jumps _n_ number of lines (to leave whitespaces). Basically `n * '\n'` passed to `print`
     pub fn jump(&self, n: u8) -> Result<(), Error> {
         let feed = vec![b'\n', n];
-        self.raw(&feed)
+        self.write_raw(&feed)
     }
 
     /// Cuts the paper, in case the instruction is supported by the printer
     pub fn cut(&self) -> Result<(), Error> {
-        self.raw(&Command::Cut.as_bytes())
+        self.write_raw(&Command::Cut.as_bytes())
     }
 
     /// Prints a table with two columns.
@@ -288,7 +288,7 @@ impl Printer {
                 Ok(())
             },
             _other => {
-                self.raw(&content)
+                self.write_raw(&content)
             }
         }
     }
@@ -304,13 +304,13 @@ impl Printer {
                 Ok(())
             },
             _other => {
-                self.raw(&content)
+                self.write_raw(&content)
             }
         }
     }
 
     pub fn image(&self, escpos_image: EscposImage) -> Result<(), Error> {
-        self.raw(&escpos_image.feed(self.printer_profile.width))
+        self.write_raw(&escpos_image.feed(self.printer_profile.width))
     }
 
     /// Sends raw information to the printer
@@ -323,7 +323,7 @@ impl Printer {
     /// printer.raw(&[0x01, 0x02])?;
     /// # Ok::<(), escpos_rs::Error>(())
     /// ```
-    pub fn raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
+    pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
         match &self.printer_connection {
             PrinterConnection::Usb{endpoint, endpoint_r: _, dh, timeout} => {
                 dh.write_bulk(
