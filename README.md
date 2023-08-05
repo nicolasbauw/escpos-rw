@@ -50,7 +50,7 @@ let printer = match Printer::new(printer_details) {
 
 ## Sending raw information
 
-The printer has the `raw` method, which allows you to send raw bytes to the printer. Pretty straightforward if you need to operate on the low-level.
+The printer has the `write_raw` method, which allows you to send raw bytes to the printer. Pretty straightforward if you need to operate on the low-level.
 
 ```rust
 use escpos_rs::{
@@ -66,12 +66,12 @@ fn main() {
         },
         Err(e) => panic!("Error: {}", e)
     };
-    match printer.raw(b"Hello, world!\n") {
+    match printer.write_raw(b"Hello, world!\n") {
         Ok(_) => (),
         Err(e) => println!("Error: {}", e)
     }
 
-    match printer.raw(Command::Cut.as_bytes()) {
+    match printer.write_raw(Command::Cut.as_bytes()) {
         Ok(_) => (),
         Err(e) => println!("Error: {}", e)
     }
