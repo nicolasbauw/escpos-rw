@@ -34,7 +34,7 @@ impl Formatter {
     /// To modify just one parameter in a simpler way, check the [modify_table_options](self::Formatter::modify_table_options) method.
     ///
     /// ```rust
-    /// # use escpos_rs::{Formatter, TableOptions};
+    /// # use escpos_rw::{Formatter, TableOptions};
     /// let mut formatter = Formatter::new(20);
     /// formatter.set_table_options(TableOptions {
     ///     header_division_pattern: Some(".-".into()),
@@ -48,7 +48,7 @@ impl Formatter {
     /// Gives back a reference to the active table options
     ///
     /// ```rust
-    /// # use escpos_rs::Formatter;
+    /// # use escpos_rw::Formatter;
     /// let mut formatter = Formatter::new(20);
     /// assert_eq!(Some("-".to_string()), formatter.get_table_options().header_division_pattern);
     /// ```
@@ -61,7 +61,7 @@ impl Formatter {
     /// Allows table options modification with a function or closure. Sometimes it may come in hand.
     ///
     /// ```rust
-    /// # use escpos_rs::Formatter;
+    /// # use escpos_rw::Formatter;
     /// let mut formatter = Formatter::new(20);
     /// formatter.modify_table_options(|table_options| {
     ///     table_options.header_division_pattern = Some("=".to_string());
@@ -77,7 +77,7 @@ impl Formatter {
     /// Notice that the final line will not contain a new line at the end.
     ///
     /// ```rust
-    /// use escpos_rs::Formatter;
+    /// use escpos_rw::Formatter;
     /// 
     /// let formatter = Formatter::new(16);
     /// let res = formatter.space_split("Sentence with two lines.");
@@ -133,7 +133,7 @@ impl Formatter {
     /// In case the headers do not fit with at least one space between, priority will be given to the second header, and the last remaining character from the first header will be replaced by a dot. If the second header would need to be shortened to less than 3 characters, then the first header will now also be truncated, with the same dot replacing the last charcater from the remaining part of the first header.
     ///
     /// ```rust
-    /// # use escpos_rs::Formatter;
+    /// # use escpos_rw::Formatter;
     /// let formatter = Formatter::new(20);
     /// let header = ("Product", "Price");
     /// let rows = vec![
@@ -208,7 +208,7 @@ impl Formatter {
     /// In case the headers do not fit with at least one space between, priority will be given to the first header, and the last remaining character from the second header will be replaced by a dot. If the second header would need to be shortened to less than 3 characters, then the first header will now also be truncated, with the same dot replacing the last charcater from the remaining part of the first header.
     ///
     /// ```rust
-    /// # use escpos_rs::Formatter;
+    /// # use escpos_rw::Formatter;
     /// let formatter = Formatter::new(20);
     /// let header = ("Product", "Price", "Qty.");
     /// let rows = vec![

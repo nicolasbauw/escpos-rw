@@ -44,7 +44,7 @@ enum PrinterConnection {
 ///
 /// The printer represents the thermal printer connected to the computer.
 /// ```rust,no_run
-/// use escpos_rs::{Printer, PrinterModel};
+/// use escpos_rw::{Printer, PrinterModel};
 ///
 /// let printer = match Printer::new(PrinterModel::TMT20.usb_profile()) {
 ///     Ok(maybe_printer) => match maybe_printer {
@@ -320,11 +320,11 @@ impl Printer {
     ///
     /// As simple as it sounds
     /// ```rust,no_run
-    /// use escpos_rs::{Printer,PrinterProfile};
+    /// use escpos_rw::{Printer,PrinterProfile};
     /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
     /// let printer = Printer::new(printer_profile).unwrap().unwrap();
     /// printer.write_raw(&[0x01, 0x02])?;
-    /// # Ok::<(), escpos_rs::Error>(())
+    /// # Ok::<(), escpos_rw::Error>(())
     /// ```
     pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
         match &self.printer_connection {
@@ -344,11 +344,11 @@ impl Printer {
     /// Reads raw information from the printer
     ///
     /// ```rust,no_run
-    /// use escpos_rs::{Printer,PrinterProfile};
+    /// use escpos_rw::{Printer,PrinterProfile};
     /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
     /// let printer = Printer::new(printer_profile).unwrap().unwrap();
     /// let buffer = printer.read_raw()?;
-    /// # Ok::<(), escpos_rs::Error>(())
+    /// # Ok::<(), escpos_rw::Error>(())
     /// ```
     pub fn read_raw(&self) -> Result<[u8; 20], Error> {
         match &self.printer_connection {

@@ -3,7 +3,7 @@
 //! Not ready for production (yet, but soon!).
 //!
 //! ```rust,no_run
-//! use escpos_rs::{Printer, PrinterProfile};
+//! use escpos_rw::{Printer, PrinterProfile};
 //!
 //! // We create a usb contest for the printer
 //! let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
@@ -37,7 +37,7 @@
 //! Because of the usual applications for thermal printers, the [Instruction](crate::Instruction) structure has been implemented, which allows you to define a sort of __template__, that you can use to print multiple documents with __certain__ data customized for each print.
 //!
 //! ```rust,no_run
-//! use escpos_rs::{
+//! use escpos_rw::{
 //!     Printer, PrintData, PrinterProfile,
 //!     Instruction, Justification, command::Font
 //! };
