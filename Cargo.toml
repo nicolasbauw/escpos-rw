@@ -1,16 +1,16 @@
 [package]
-name = "escpos-rs"
-version = "0.4.0"
+name = "escpos-rw"
+version = "0.5.0"
 license = "MIT"
 description = "Control esc/pos printers with rust"
-repository = "https://github.com/Malanche/escpos-rs.git"
-authors = ["Carlos Malanche <carlos.malanche.f@gmail.com>"]
+repository = "https://github.com/nicolasbauw/escpos-rw"
+authors = ["Nicolas BAUW <nbauw@hotmail.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rusb = "0.8.1"
+rusb = "0.9.3"
 log = "0.4.14"
 serde = {version = "1.0.117", features = ["derive"]}
 codepage-437 = "0.1.0"
