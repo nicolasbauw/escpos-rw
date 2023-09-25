@@ -1,5 +1,6 @@
 pub use self::printer_profile::{PrinterProfile, PrinterConnectionData, PrinterProfileBuilder};
 pub use self::printer_model::PrinterModel;
+use std::{thread, time::Duration};
 
 mod printer_profile;
 mod printer_model;
@@ -19,6 +20,8 @@ extern crate log;
 use log::warn;
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
 use codepage_437::{IntoCp437, CP437_CONTROL};
+
+const OP_DELAY: u64 = 10;
 
 /// Keeps the actual living connection to the device
 enum PrinterConnection {
@@ -331,6 +334,7 @@ impl Printer {
                     bytes.as_ref(),
                     *timeout
                 ).map_err(Error::RusbError)?;
+                thread::sleep(Duration::from_millis(OP_DELAY));
                 Ok(())
             },
             _other => panic!("Unimplemented")
