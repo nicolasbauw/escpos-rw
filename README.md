@@ -1,11 +1,15 @@
-# escpos-rs: A Rust crate for thermal printers
+# escpos-rw: A Rust crate for thermal printers
 
 **Work in progress. Not ready for production.**
+
+Escpos-rw is a fork of escpos-rs:
+- fix for endpoint address
+- added a read_raw function to read data (eg. status bytes) from the printer
 
 Escpos-rs builds a bit on top of `escpospp`, which aims to bring relatively easy communication to thermal printers that understand the ESC/POS protocol. Here is an example of a simple print with `escpos-rs`
 
 ```rust
-use escpos_rs::{Printer, PrinterProfile};
+use escpos_rw::{Printer, PrinterProfile};
 
 fn main() {
     // We create the printer details
@@ -53,7 +57,7 @@ let printer = match Printer::new(printer_details) {
 The printer has the `write_raw` method, which allows you to send raw bytes to the printer. Pretty straightforward if you need to operate on the low-level.
 
 ```rust
-use escpos_rs::{
+use escpos_rw::{
     Printer, PrinterModel,
     command::Command
 };
@@ -85,7 +89,7 @@ You can take a look at the `Command` enum to see which commands are implemented 
 You can also send images to the printer (assuming it is supported) through the `EscposImage` structure.
 
 ```rust
-use escpos_rs::{
+use escpos_rw::{
     EscposImage, Printer, PrinterProfile, Justification
 };
 
@@ -118,7 +122,7 @@ To be added soon.
 The Instruction structure has as primary goal the construction of a __template__, which can be used to print multiple documents with dynamic data.
 
 ```rust
-use escpos_rs::{Printer, PrintData, PrinterProfile, Instruction, Justification, command::Font};
+use escpos_rw::{Printer, PrintData, PrinterProfile, Instruction, Justification, command::Font};
 
 fn main() {
     // Printer profile...
