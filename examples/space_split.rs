@@ -1,4 +1,4 @@
-use escpos_rs::{Printer, PrinterProfile, command::Font};
+use escpos_rw::{Printer, PrinterProfile, command::Font};
 
 fn main() {
     let printer_profile = PrinterProfile::terminal_builder().with_font_width(Font::FontA, 32).build();
