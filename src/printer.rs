@@ -11,7 +11,6 @@ use crate::{
     EscposImage,
     Error,
     command::{Command, Font},
-    Formatter
 };
 
 extern crate codepage_437;
@@ -61,8 +60,6 @@ pub struct Printer {
     printer_connection: PrinterConnection,
     /// Current font and width for printing text
     font_and_width: (Font, u8),
-    /// The auxiliary formatter to print nicely
-    formatter: Formatter,
     /// If words should be splitted or not
     space_split: bool
 }
@@ -78,7 +75,6 @@ impl Printer {
         } else {
             return Err(Error::NoFontFound);
         };
-        let formatter = Formatter::new(font_and_width.1);
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
             PrinterConnectionData::Usb{vendor_id, product_id, endpoint_w, endpoint_r, timeout} => {
@@ -165,7 +161,6 @@ impl Printer {
                                     },
                                     printer_profile,
                                     font_and_width,
-                                    formatter,
                                     space_split: false
                                 }));
                             },
@@ -181,7 +176,6 @@ impl Printer {
                 printer_connection: PrinterConnection::Terminal,
                 printer_profile,
                 font_and_width,
-                formatter,
                 space_split: false
             }))
         }
@@ -218,102 +212,6 @@ impl Printer {
     pub fn instruction(&self, instruction: &Instruction, print_data: Option<&PrintData>) -> Result<(), Error> {
         let content = instruction.to_vec(&self.printer_profile, print_data)?;
         self.write_raw(&content)
-    }
-    
-    /// Print some text.
-    ///
-    /// By default, lines will break when the text exceeds the current font's width. If you want to break lines with whitespaces, according to the width, you can use the [set_space_split](Printer::set_space_split) function.
-    pub fn print<T: Into<String>>(&self, content: T) -> Result<(), Error> {
-        let content = if self.space_split {
-            self.formatter.space_split(content.into())
-        } else {
-            content.into()
-        };
-        match self.printer_connection {
-            PrinterConnection::Usb{..} => {
-                let feed = content.into_cp437(&CP437_CONTROL).map_err(|e| Error::CP437Error(e.into_string()))?;
-                self.write_raw(&feed)
-            },
-            PrinterConnection::Network => panic!("Unimplemented!"),
-            PrinterConnection::Terminal => {
-                print!("{}", content);
-                Ok(())
-            }
-        }
-    }
-
-    /// Print some text, with a newline at the end.
-    ///
-    /// By default, lines will break when the text exceeds the current font's width. If you want to break lines with whitespaces, according to the width, you can use the [set_space_split](Printer::set_space_split) function.
-    pub fn println<T: Into<String>>(&self, content: T) -> Result<(), Error> {
-        let feed = content.into() + "\n";
-        self.print(&feed)
-    }
-
-    /// Sets the current printing font.
-    ///
-    /// The function will return an error if the specified font does not exist in the printer profile.
-    pub fn set_font(&mut self, font: Font) -> Result<(), Error> {
-        if let Some(width) = self.printer_profile.columns_per_font.get(&font) {
-            self.font_and_width = (font, *width);
-            Ok(())
-        } else {
-            Err(Error::UnsupportedFont)
-        }
-    }
-
-    /// Enables or disables space splitting for long text printing.
-    ///
-    /// By default, the printer writes text in a single stream to the printer (which splits it wherever the maximum width is reached). To split by whitespaces, you can call this function with `true` as argument.
-    pub fn set_space_split(&mut self, state: bool) {
-        self.space_split = state;
-    }
-
-    /// Jumps _n_ number of lines (to leave whitespaces). Basically `n * '\n'` passed to `print`
-    pub fn jump(&self, n: u8) -> Result<(), Error> {
-        let feed = vec![b'\n', n];
-        self.write_raw(&feed)
-    }
-
-    /// Cuts the paper, in case the instruction is supported by the printer
-    pub fn cut(&self) -> Result<(), Error> {
-        self.write_raw(&Command::Cut.as_bytes())
-    }
-
-    /// Prints a table with two columns.
-    ///
-    /// For more details, check [Formatter](crate::Formatter)'s [duo_table](crate::Formatter::duo_table).
-    pub fn duo_table<A: Into<String>, B: Into<String>, C: IntoIterator<Item = (D, E)>, D: Into<String>, E: Into<String>>(&self, headers: (A, B), rows: C) -> Result<(), Error> {
-        let content = self.formatter.duo_table(headers, rows);
-        match &self.printer_connection {
-            PrinterConnection::Terminal => {
-                println!("{}", content);
-                Ok(())
-            },
-            _other => {
-                self.write_raw(&content)
-            }
-        }
-    }
-
-    /// Prints a table with three columns.
-    ///
-    /// For more details, check [Formatter](crate::Formatter)'s [trio_table](crate::Formatter::trio_table).
-    pub fn trio_table<A: Into<String>, B: Into<String>, C: Into<String>, D: IntoIterator<Item = (E, F, G)>, E: Into<String>, F: Into<String>, G: Into<String>>(&self, headers: (A, B, C), rows: D) -> Result<(), Error> {
-        let content = self.formatter.trio_table(headers, rows);
-        match &self.printer_connection {
-            PrinterConnection::Terminal => {
-                println!("{}", content);
-                Ok(())
-            },
-            _other => {
-                self.write_raw(&content)
-            }
-        }
-    }
-
-    pub fn image(&self, escpos_image: EscposImage) -> Result<(), Error> {
-        self.write_raw(&escpos_image.feed(self.printer_profile.width))
     }
 
     /// Sends raw information to the printer
