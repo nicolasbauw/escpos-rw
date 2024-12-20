@@ -88,7 +88,6 @@
 pub use printer::{Printer, PrinterProfile, PrinterProfileBuilder, PrinterModel, PrinterConnectionData};
 pub use instruction::{Instruction, Justification, PrintData, PrintDataBuilder, EscposImage};
 pub use error::Error;
-pub use formatter::{Formatter, TableOptions};
 
 /// Contains raw esc/pos commands
 pub mod command;
@@ -96,4 +95,3 @@ pub mod command;
 mod printer;
 mod instruction;
 mod error;
-mod formatter;
