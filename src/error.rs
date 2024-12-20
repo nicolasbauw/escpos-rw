@@ -5,8 +5,6 @@ pub enum Error {
     RusbError(rusb::Error),
     /// For text printing, the replaced sequence could not be found
     CP437Error(String),
-    /// Error regarding image treatment
-    ImageError(image::ImageError),
     /// This means no bulk endpoint could be found
     NoBulkEndpoint,
     /// No replacement string for an instruction was found
@@ -34,7 +32,6 @@ impl std::fmt::Display for Error {
         let content = match self {
             Error::RusbError(e) => format!("rusb error: {}", e),
             Error::CP437Error(detail) => format!("CP437 error: {}", detail),
-            Error::ImageError(e) => format!("Image error: {}", e),
             Error::NoBulkEndpoint => "No bulk endpoint could be found".to_string(),
             Error::NoReplacementFound(replacement) => format!("Could not find replacement for tag {{{}}}", replacement),
             Error::NoPrintData => "Print data must be supplied for this instruction".to_string(),

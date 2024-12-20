@@ -7,12 +7,10 @@ use crate::{
     Error,
 };
 
-extern crate codepage_437;
 extern crate log;
 
 use log::warn;
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
-use codepage_437::{IntoCp437, CP437_CONTROL};
 
 const OP_DELAY: u64 = 10;
 
