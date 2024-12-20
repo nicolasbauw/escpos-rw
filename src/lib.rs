@@ -85,13 +85,8 @@
 //!
 //! This structure implements both Serialize, and Deserialize from [serde](https://docs.rs/serde), so it is possible to store these instructions to recover them from memory. You can serialize to a json, as pictures are encoded to base64 first to be utf-8 compatible.
 
-pub use printer::{Printer, PrinterProfile, PrinterProfileBuilder, PrinterModel, PrinterConnectionData};
-pub use instruction::{Instruction, Justification, PrintData, PrintDataBuilder, EscposImage};
+pub use printer::{Printer, PrinterProfile, PrinterProfileBuilder, PrinterConnectionData};
 pub use error::Error;
 
-/// Contains raw esc/pos commands
-pub mod command;
-
 mod printer;
-mod instruction;
 mod error;

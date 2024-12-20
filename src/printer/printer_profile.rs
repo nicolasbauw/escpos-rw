@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use crate::{
     Error,
-    command::Font
 };
 
 /// Available connections with the printer
@@ -39,7 +38,7 @@ pub struct PrinterProfile {
     /// Existing connection to the printer
     pub (crate) printer_connection_data: PrinterConnectionData,
     /// Paper width, in characters, for the printer
-    pub (crate) columns_per_font: HashMap<Font, u8>,
+    pub (crate) columns_per_font: u8,
     /// Total printer width in pixels, for image printing
     pub (crate) width: u16
 }
@@ -48,7 +47,7 @@ impl PrinterProfile {
     /// Create custom printing details
     ///
     /// Not recommended to use, as it contains a lot of arguments. See one of the builders instead (at the moment, only [usb_builder](PrinterProfile::usb_builder) and [terminal_builder](PrinterProfile::terminal_builder) available).
-    pub fn new(printer_connection_data: PrinterConnectionData, columns_per_font: HashMap<Font, u8>, width: u16) -> PrinterProfile {
+    pub fn new(printer_connection_data: PrinterConnectionData, columns_per_font: u8, width: u16) -> PrinterProfile {
         PrinterProfile {
             printer_connection_data,
             columns_per_font,
@@ -88,7 +87,7 @@ pub struct PrinterProfileBuilder {
     /// The connection to the printer
     printer_connection_data: PrinterConnectionData,
     /// Columns that each font spans at maximum
-    columns_per_font: HashMap<Font, u8>,
+    columns_per_font: u8,
     /// Widtth, in dots, of the printer
     width: u16
 }
@@ -114,7 +113,7 @@ impl PrinterProfileBuilder {
                 endpoint_r: None,
                 timeout: std::time::Duration::from_secs(2)
             },
-            columns_per_font: vec![(Font::FontA, 32)].into_iter().collect(),
+            columns_per_font: 32,
             width: 384
         }
     }
@@ -131,7 +130,7 @@ impl PrinterProfileBuilder {
     pub fn new_terminal() -> PrinterProfileBuilder {
         PrinterProfileBuilder {
             printer_connection_data: PrinterConnectionData::Terminal,
-            columns_per_font: vec![(Font::FontA, 32)].into_iter().collect(),
+            columns_per_font: 32,
             width: 384
         }
     }
@@ -185,20 +184,6 @@ impl PrinterProfileBuilder {
     /// ```
     pub fn with_width(mut self, width: u16) -> PrinterProfileBuilder {
         self.width = width;
-        self
-    }
-
-    /// Adds a specific width per font
-    ///
-    /// This allows the justification, and proper word splitting to work. If you feel insecure about what value to use, the default font (FontA) usually has 32 characters of width for 58mm paper printers, and 48 for 80mm paper. You can also look for the specsheet, or do trial and error.
-    /// ```rust
-    /// use escpos_rs::{PrinterProfileBuilder, command::Font};
-    /// let printer_profile = PrinterProfileBuilder::new_usb(0x0001, 0x0001)
-    ///     .with_font_width(Font::FontA, 32)
-    ///     .build();
-    /// ```
-    pub fn with_font_width(mut self, font: Font, width: u8) -> PrinterProfileBuilder {
-        self.columns_per_font.insert(font, width);
         self
     }
 

@@ -1,16 +1,10 @@
 pub use self::printer_profile::{PrinterProfile, PrinterConnectionData, PrinterProfileBuilder};
-pub use self::printer_model::PrinterModel;
 use std::{thread, time::Duration};
 
 mod printer_profile;
-mod printer_model;
 
 use crate::{
-    Instruction,
-    PrintData,
-    EscposImage,
     Error,
-    command::{Command, Font},
 };
 
 extern crate codepage_437;
@@ -59,7 +53,7 @@ pub struct Printer {
     /// Actual connection to the printer
     printer_connection: PrinterConnection,
     /// Current font and width for printing text
-    font_and_width: (Font, u8),
+    font_and_width: (u8, u8),
     /// If words should be splitted or not
     space_split: bool
 }
@@ -70,11 +64,7 @@ impl Printer {
     /// Creates the printer with the given details, from the printer details provided, and in the given USB context.
     pub fn new(printer_profile: PrinterProfile) -> Result<Option<Printer>, Error> {
         // Font and width, at least one required.
-        let font_and_width = if let Some(width) = printer_profile.columns_per_font.get(&Font::FontA) {
-            (Font::FontA, *width)
-        } else {
-            return Err(Error::NoFontFound);
-        };
+        let font_and_width = (0x00, 32);
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
             PrinterConnectionData::Usb{vendor_id, product_id, endpoint_w, endpoint_r, timeout} => {
@@ -179,39 +169,6 @@ impl Printer {
                 space_split: false
             }))
         }
-    }
-
-    /// Guesses the printer, and connects to it (not meant for production)
-    ///
-    /// Might help to find which printer you have if you have only one connected. The function will try to connect to a printer, based on the common ones recognized by this library.
-    pub fn with_context_feeling_lucky() -> Result<Option<Printer>, Error> {
-        // Match to force update then a new model gets added, just as a reminder
-        /*****
-        IF YOU ARE READING THIS, AND YOU GOT AN  ERROR BECAUSE A PRINTER WAS MISSING,
-        UPDATE THE FOR FOLLOWING THE MATCH TO TRY ALL PRINTERS
-        *****/
-        match PrinterModel::TMT20 {
-            PrinterModel::TMT20 => (),
-            PrinterModel::ZKTeco => ()
-        }
-        // Keep up to date! All printers should appear here for the function to work
-        for printer_model in vec![PrinterModel::TMT20, PrinterModel::ZKTeco] {
-            let printer_profile = printer_model.usb_profile();
-            let candidate = Printer::new(printer_profile)?;
-            if candidate.is_some() {
-                return Ok(candidate)
-            }
-        }
-        // No printer was found
-        Ok(None)
-    }
-
-    /// Print an instruction
-    ///
-    /// You can pass optional printer data to the printer to fill in the dynamic parts of the instruction.
-    pub fn instruction(&self, instruction: &Instruction, print_data: Option<&PrintData>) -> Result<(), Error> {
-        let content = instruction.to_vec(&self.printer_profile, print_data)?;
-        self.write_raw(&content)
     }
 
     /// Sends raw information to the printer
