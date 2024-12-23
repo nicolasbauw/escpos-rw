@@ -3,9 +3,7 @@ use std::{thread, time::Duration};
 
 mod printer_profile;
 
-use crate::{
-    Error,
-};
+use crate::Error;
 
 extern crate log;
 
@@ -47,13 +45,8 @@ enum PrinterConnection {
 /// // Now we have a printer
 /// ```
 pub struct Printer {
-    printer_profile: PrinterProfile,
     /// Actual connection to the printer
     printer_connection: PrinterConnection,
-    /// Current font and width for printing text
-    font_and_width: (u8, u8),
-    /// If words should be splitted or not
-    space_split: bool
 }
 
 impl Printer {
@@ -61,8 +54,6 @@ impl Printer {
     /// 
     /// Creates the printer with the given details, from the printer details provided, and in the given USB context.
     pub fn new(printer_profile: PrinterProfile) -> Result<Option<Printer>, Error> {
-        // Font and width, at least one required.
-        let font_and_width = (0x00, 32);
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
             PrinterConnectionData::Usb{vendor_id, product_id, endpoint_w, endpoint_r, timeout} => {
@@ -147,9 +138,6 @@ impl Printer {
                                         dh,
                                         timeout
                                     },
-                                    printer_profile,
-                                    font_and_width,
-                                    space_split: false
                                 }));
                             },
                             Err(e) => return Err(Error::RusbError(e))
@@ -162,9 +150,6 @@ impl Printer {
             PrinterConnectionData::Network{..} => panic!("Unsupported!"),
             PrinterConnectionData::Terminal => Ok(Some(Printer{
                 printer_connection: PrinterConnection::Terminal,
-                printer_profile,
-                font_and_width,
-                space_split: false
             }))
         }
     }

@@ -1,7 +1,4 @@
-use std::collections::HashMap;
-use crate::{
-    Error,
-};
+use crate::Error;
 
 /// Available connections with the printer
 ///
@@ -37,21 +34,15 @@ pub enum PrinterConnectionData {
 pub struct PrinterProfile {
     /// Existing connection to the printer
     pub (crate) printer_connection_data: PrinterConnectionData,
-    /// Paper width, in characters, for the printer
-    pub (crate) columns_per_font: u8,
-    /// Total printer width in pixels, for image printing
-    pub (crate) width: u16
 }
 
 impl PrinterProfile {
     /// Create custom printing details
     ///
     /// Not recommended to use, as it contains a lot of arguments. See one of the builders instead (at the moment, only [usb_builder](PrinterProfile::usb_builder) and [terminal_builder](PrinterProfile::terminal_builder) available).
-    pub fn new(printer_connection_data: PrinterConnectionData, columns_per_font: u8, width: u16) -> PrinterProfile {
+    pub fn new(printer_connection_data: PrinterConnectionData) -> PrinterProfile {
         PrinterProfile {
             printer_connection_data,
-            columns_per_font,
-            width
         }
     }
 
@@ -86,8 +77,6 @@ impl PrinterProfile {
 pub struct PrinterProfileBuilder {
     /// The connection to the printer
     printer_connection_data: PrinterConnectionData,
-    /// Columns that each font spans at maximum
-    columns_per_font: u8,
     /// Widtth, in dots, of the printer
     width: u16
 }
@@ -113,7 +102,6 @@ impl PrinterProfileBuilder {
                 endpoint_r: None,
                 timeout: std::time::Duration::from_secs(2)
             },
-            columns_per_font: 32,
             width: 384
         }
     }
@@ -130,7 +118,6 @@ impl PrinterProfileBuilder {
     pub fn new_terminal() -> PrinterProfileBuilder {
         PrinterProfileBuilder {
             printer_connection_data: PrinterConnectionData::Terminal,
-            columns_per_font: 32,
             width: 384
         }
     }
@@ -215,8 +202,6 @@ impl PrinterProfileBuilder {
     pub fn build(self) -> PrinterProfile {
         PrinterProfile {
             printer_connection_data: self.printer_connection_data,
-            columns_per_font: self.columns_per_font,
-            width: self.width
         }
     }
 }
