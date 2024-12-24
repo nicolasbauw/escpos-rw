@@ -24,8 +24,6 @@ enum PrinterConnection {
         /// Time to wait before giving up writing to the bulk endpoint
         timeout: std::time::Duration
     },
-    #[allow(dead_code)]
-    Network,
     Terminal
 }
 
