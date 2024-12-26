@@ -21,7 +21,7 @@ enum PrinterConnection {
     Terminal
 }
 
-/// Main escpos-rs structure
+/// Printer object
 ///
 /// The printer represents the thermal printer connected to the computer.
 /// ```rust,no_run

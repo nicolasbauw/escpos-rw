@@ -81,9 +81,7 @@ impl PrinterProfileBuilder {
     /// let printer_profile_builder = PrinterProfileBuilder::new_usb(0x0001, 0x0001);
     /// ```
     ///
-    /// The data structure will be properly built just with the vendor id and the product id. The [Printer](crate::Printer)'s [new](crate::Printer::new) method will try to locate a bulk write endpoint, but it might fail to do so. See [with_endpoint](PrinterProfileBuilder::with_endpoint) for manual setup.
-    ///
-    /// By default, a width of 384 dots and the `FontA` with 32 columns of width will be loaded with the profile.
+    /// The data structure will be properly built just with the vendor id and the product id. The [Printer](crate::Printer)'s [new](crate::Printer::new) method will try to locate a bulk write endpoint, but it might fail to do so.
     pub fn new_usb(vendor_id: u16, product_id: u16) -> PrinterProfileBuilder {
         PrinterProfileBuilder {
             printer_connection_data: PrinterConnectionData::Usb {
