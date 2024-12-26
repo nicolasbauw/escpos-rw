@@ -42,8 +42,6 @@ pub struct Printer {
 }
 
 impl Printer {
-    /// Creates a new printer
-    /// 
     /// Creates the printer with the given details, from the printer details provided, and in the given USB context.
     pub fn new(printer_profile: PrinterProfile) -> Result<Option<Printer>, Error> {
         // Quick check for the profile containing at least one font
