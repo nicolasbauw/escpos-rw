@@ -5,9 +5,6 @@ mod printer_profile;
 
 use crate::Error;
 
-extern crate log;
-
-use log::warn;
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
 
 const OP_DELAY: u64 = 10;
@@ -122,7 +119,7 @@ impl Printer {
                                         };
                                     }
                                 } else {
-                                    warn!("Could not find out if kernel driver is active, might encounter a problem soon.");
+                                    println!("Could not find out if kernel driver is active, might encounter a problem soon.");
                                 };
                                 // Now we claim the interface
                                 match dh.claim_interface(0) {
