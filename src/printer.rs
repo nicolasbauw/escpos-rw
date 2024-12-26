@@ -1,4 +1,4 @@
-pub use self::printer_profile::{PrinterProfile, PrinterConnectionData, PrinterProfileBuilder};
+pub use self::printer_profile::{PrinterProfile, UsbConnectionData, PrinterProfileBuilder};
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
 use std::{thread, time::Duration};
 use crate::Error;
@@ -44,17 +44,15 @@ impl Printer {
     /// Creates the printer with the given details, from the printer details provided, and in the given USB context.
     pub fn new(printer_profile: PrinterProfile) -> Result<Option<Printer>, Error> {
         // Quick check for the profile containing at least one font
-        match printer_profile.printer_connection_data {
-            PrinterConnectionData::Usb{vendor_id, product_id, endpoint_w, endpoint_r, timeout} => {
                 let context = Context::new().map_err(Error::UsbError)?;
         
                 let devices = context.devices().map_err(Error::UsbError)?;
                 for device in devices.iter() {
                     let s = device.device_descriptor().map_err(Error::UsbError)?;
-                    if s.vendor_id() == vendor_id && s.product_id() == product_id {
+                    if s.vendor_id() == printer_profile.printer_connection_data.vendor_id && s.product_id() == printer_profile.printer_connection_data.product_id {
                         // Before opening the device, we must find the bulk endpoint
                         let config_descriptor = device.active_config_descriptor().map_err(Error::UsbError)?;
-                        let actual_endpoint = if let Some(endpoint_w) = endpoint_w {
+                        let actual_endpoint = if let Some(endpoint_w) = printer_profile.printer_connection_data.endpoint_w {
                             endpoint_w
                         } else {
                             let mut detected_endpoint: Option<u8> = None;
@@ -77,7 +75,7 @@ impl Printer {
 
                         };
 
-                        let actual_endpoint_r = if let Some(endpoint_r) = endpoint_r {
+                        let actual_endpoint_r = if let Some(endpoint_r) = printer_profile.printer_connection_data.endpoint_r {
                             endpoint_r
                         } else {
                             let mut detected_endpoint_r: Option<u8> = None;
@@ -120,6 +118,7 @@ impl Printer {
                                     Ok(_) => (),
                                     Err(e) => return Err(Error::UsbError(e))
                                 }
+                                let timeout = printer_profile.printer_connection_data.timeout;
                                 return Ok(Some(Printer {
                                     printer_connection: PrinterConnection::Usb {
                                         endpoint: actual_endpoint,
@@ -135,8 +134,6 @@ impl Printer {
                 }
                 // No printer was found with such vid and pid
                 Ok(None)
-            },
-        }
     }
 
     /// Sends bytes to the printer

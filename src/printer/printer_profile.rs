@@ -2,20 +2,17 @@
 ///
 /// Determines the kind of connection that will be sustained with the printer. At the moment, only Usb and Terminal are implemented. Try not to use this enum directly, use the builder pattern instead (using the [usb_builder](PrinterProfile::usb_builder) or [usb_builder](PrinterProfile::terminal_builder) methods. `network_builder` soon to be available).
 #[derive(Clone, Debug)]
-pub enum PrinterConnectionData {
-    /// Usb connection
-    Usb {
-        /// Vendor id for the printer
-        vendor_id: u16,
-        /// product id for the printer
-        product_id: u16,
-        /// Endpoint where the usb data is meant to be written to
-        endpoint_w: Option<u8>,
-        /// Endpoint where the usb data is meant to be read from
-        endpoint_r: Option<u8>,
-        /// Timeout for bulk write operations
-        timeout: std::time::Duration
-    },
+pub struct UsbConnectionData {
+    /// Vendor id for the printer
+    pub vendor_id: u16,
+    /// product id for the printer
+    pub product_id: u16,
+    /// Endpoint where the usb data is meant to be written to
+    pub endpoint_w: Option<u8>,
+    /// Endpoint where the usb data is meant to be read from
+    pub endpoint_r: Option<u8>,
+    /// Timeout for bulk write operations
+    pub timeout: std::time::Duration
 }
 
 /// Details required to connect and print
@@ -24,14 +21,14 @@ pub enum PrinterConnectionData {
 #[derive(Clone, Debug)]
 pub struct PrinterProfile {
     /// Existing connection to the printer
-    pub (crate) printer_connection_data: PrinterConnectionData,
+    pub (crate) printer_connection_data: UsbConnectionData,
 }
 
 impl PrinterProfile {
     /// Create custom printing details
     ///
     /// Not recommended to use, as it contains a lot of arguments. See one of the builders instead (at the moment, only [usb_builder](PrinterProfile::usb_builder) and [terminal_builder](PrinterProfile::terminal_builder) available).
-    pub fn new(printer_connection_data: PrinterConnectionData) -> PrinterProfile {
+    pub fn new(printer_connection_data: UsbConnectionData) -> PrinterProfile {
         PrinterProfile {
             printer_connection_data,
         }
@@ -55,7 +52,7 @@ impl PrinterProfile {
 /// Builder pattern for the [PrinterProfile](crate::PrinterProfile) structure.
 pub struct PrinterProfileBuilder {
     /// The connection to the printer
-    printer_connection_data: PrinterConnectionData,
+    printer_connection_data: UsbConnectionData,
 }
 
 impl PrinterProfileBuilder {
@@ -70,7 +67,7 @@ impl PrinterProfileBuilder {
     /// The data structure will be properly built just with the vendor id and the product id. The [Printer](crate::Printer)'s [new](crate::Printer::new) method will try to locate a bulk write endpoint, but it might fail to do so.
     pub fn new_usb(vendor_id: u16, product_id: u16) -> PrinterProfileBuilder {
         PrinterProfileBuilder {
-            printer_connection_data: PrinterConnectionData::Usb {
+            printer_connection_data: UsbConnectionData {
                 vendor_id,
                 product_id,
                 endpoint_w: None,
