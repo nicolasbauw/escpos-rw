@@ -52,14 +52,14 @@ impl Printer {
         // Quick check for the profile containing at least one font
         match printer_profile.printer_connection_data {
             PrinterConnectionData::Usb{vendor_id, product_id, endpoint_w, endpoint_r, timeout} => {
-                let context = Context::new().map_err(Error::RusbError)?;
+                let context = Context::new().map_err(Error::UsbError)?;
         
-                let devices = context.devices().map_err(Error::RusbError)?;
+                let devices = context.devices().map_err(Error::UsbError)?;
                 for device in devices.iter() {
-                    let s = device.device_descriptor().map_err(Error::RusbError)?;
+                    let s = device.device_descriptor().map_err(Error::UsbError)?;
                     if s.vendor_id() == vendor_id && s.product_id() == product_id {
                         // Before opening the device, we must find the bulk endpoint
-                        let config_descriptor = device.active_config_descriptor().map_err(Error::RusbError)?;
+                        let config_descriptor = device.active_config_descriptor().map_err(Error::UsbError)?;
                         let actual_endpoint = if let Some(endpoint_w) = endpoint_w {
                             endpoint_w
                         } else {
@@ -115,7 +115,7 @@ impl Printer {
                                         // The kernel is active, we have to detach it
                                         match dh.detach_kernel_driver(0) {
                                             Ok(_) => (),
-                                            Err(e) => return Err(Error::RusbError(e))
+                                            Err(e) => return Err(Error::UsbError(e))
                                         };
                                     }
                                 } else {
@@ -124,7 +124,7 @@ impl Printer {
                                 // Now we claim the interface
                                 match dh.claim_interface(0) {
                                     Ok(_) => (),
-                                    Err(e) => return Err(Error::RusbError(e))
+                                    Err(e) => return Err(Error::UsbError(e))
                                 }
                                 return Ok(Some(Printer {
                                     printer_connection: PrinterConnection::Usb {
@@ -135,7 +135,7 @@ impl Printer {
                                     },
                                 }));
                             },
-                            Err(e) => return Err(Error::RusbError(e))
+                            Err(e) => return Err(Error::UsbError(e))
                         };
                     }
                 }
@@ -166,7 +166,7 @@ impl Printer {
                     *endpoint,
                     bytes.as_ref(),
                     *timeout
-                ).map_err(Error::RusbError)?;
+                ).map_err(Error::UsbError)?;
                 thread::sleep(Duration::from_millis(OP_DELAY));
                 Ok(())
             },
@@ -191,7 +191,7 @@ impl Printer {
                     *endpoint_r,
                     &mut buffer,
                     *timeout
-                ).map_err(Error::RusbError)?;
+                ).map_err(Error::UsbError)?;
                 Ok(buffer)
             },
             _other => panic!("Unimplemented")
