@@ -1,11 +1,8 @@
 pub use self::printer_profile::{PrinterProfile, PrinterConnectionData, PrinterProfileBuilder};
-use std::{thread, time::Duration};
-
-mod printer_profile;
-
-use crate::Error;
-
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
+use std::{thread, time::Duration};
+use crate::Error;
+mod printer_profile;
 
 const OP_DELAY: u64 = 10;
 
@@ -148,9 +145,8 @@ impl Printer {
         }
     }
 
-    /// Sends raw information to the printer
+    /// Sends bytes to the printer
     ///
-    /// As simple as it sounds
     /// ```rust,no_run
     /// use escpos_rw::{Printer,PrinterProfile};
     /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
@@ -173,7 +169,7 @@ impl Printer {
         }
     }
 
-    /// Reads raw information from the printer
+    /// Reads bytes from the printer
     ///
     /// ```rust,no_run
     /// use escpos_rw::{Printer,PrinterProfile};
