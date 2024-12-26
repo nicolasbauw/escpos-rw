@@ -16,8 +16,6 @@ pub enum PrinterConnectionData {
         /// Timeout for bulk write operations
         timeout: std::time::Duration
     },
-    /// Terminal printer, used for really simple previews.
-    Terminal
 }
 
 /// Details required to connect and print
@@ -50,18 +48,6 @@ impl PrinterProfile {
     pub fn usb_builder(vendor_id: u16, product_id: u16) -> PrinterProfileBuilder {
         PrinterProfileBuilder::new_usb(vendor_id, product_id)
     }
-
-    /// Creates a [PrinterProfileBuilder](crate::PrinterProfileBuilder) set for terminal printing
-    ///
-    /// Equivalent to a call to [PrinterProfileBuilder](crate::PrinterProfileBuilder)'s [new_terminal](crate::PrinterProfileBuilder::new_terminal) function.
-    /// ```rust
-    /// use escpos_rs::PrinterProfile;
-    /// // Creates a minimum data structure to connect to a printer
-    /// let printer_profile = PrinterProfile::terminal_builder().build();
-    /// ```
-    pub fn terminal_builder() -> PrinterProfileBuilder {
-        PrinterProfileBuilder::new_terminal()
-    }
 }
 
 /// Helper structure to create a [PrinterProfile](crate::PrinterProfile)
@@ -91,21 +77,6 @@ impl PrinterProfileBuilder {
                 endpoint_r: None,
                 timeout: std::time::Duration::from_secs(2)
             },
-        }
-    }
-
-    /// Creates a new [PrinterProfileBuilder](crate::PrinterProfileBuilder) set for terminal printing
-    ///
-    /// ```rust
-    /// use escpos_rs::PrinterProfileBuilder;
-    /// // Creates a minimum (probably non-working) data structure to connect to a printer
-    /// let printer_profile_builder = PrinterProfileBuilder::new_terminal();
-    /// ```
-    ///
-    /// The printer will have a 32-char width for printing text, and a default with of 384 (but it cannot be used, as pictures can't be printed to the terminal).
-    pub fn new_terminal() -> PrinterProfileBuilder {
-        PrinterProfileBuilder {
-            printer_connection_data: PrinterConnectionData::Terminal,
         }
     }
 

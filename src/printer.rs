@@ -17,8 +17,7 @@ enum PrinterConnection {
         dh: DeviceHandle<Context>,
         /// Time to wait before giving up writing to the bulk endpoint
         timeout: std::time::Duration
-    },
-    Terminal
+    }
 }
 
 /// Printer object
@@ -137,9 +136,6 @@ impl Printer {
                 // No printer was found with such vid and pid
                 Ok(None)
             },
-            PrinterConnectionData::Terminal => Ok(Some(Printer{
-                printer_connection: PrinterConnection::Terminal,
-            }))
         }
     }
 
@@ -162,8 +158,7 @@ impl Printer {
                 ).map_err(Error::UsbError)?;
                 thread::sleep(Duration::from_millis(OP_DELAY));
                 Ok(())
-            },
-            _other => panic!("Unimplemented")
+            }
         }
     }
 
@@ -187,7 +182,6 @@ impl Printer {
                 ).map_err(Error::UsbError)?;
                 Ok(buffer)
             },
-            _other => panic!("Unimplemented")
         }
     }
 }
