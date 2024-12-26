@@ -16,7 +16,7 @@
 //! };
 //! ```
 
-pub use printer::{Printer, PrinterProfile, PrinterProfileBuilder, UsbConnectionData};
+pub use printer::{Printer, UsbConnectionData};
 pub use error::Error;
 
 mod printer;

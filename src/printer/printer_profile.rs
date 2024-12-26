@@ -15,15 +15,6 @@ pub struct UsbConnectionData {
     pub timeout: std::time::Duration
 }
 
-/// Details required to connect and print
-///
-/// In order to use the full functionality of the library, some information should be provided regarding the printer. The bare minimum information needed is the product id and the vendor id.
-#[derive(Clone, Debug)]
-pub struct PrinterProfile {
-    /// Existing connection to the printer
-    pub (crate) printer_connection_data: UsbConnectionData,
-}
-
 impl PrinterProfile {
     /// Create custom printing details
     ///

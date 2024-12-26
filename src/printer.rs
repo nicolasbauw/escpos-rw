@@ -1,8 +1,6 @@
-pub use self::printer_profile::{PrinterProfile, UsbConnectionData, PrinterProfileBuilder};
 use rusb::{UsbContext, Context, DeviceHandle, TransferType, Direction};
 use std::{thread, time::Duration};
 use crate::Error;
-mod printer_profile;
 
 const OP_DELAY: u64 = 10;
 
@@ -18,6 +16,19 @@ enum PrinterConnection {
         /// Time to wait before giving up writing to the bulk endpoint
         timeout: std::time::Duration
     }
+}
+
+pub struct UsbConnectionData {
+    /// Vendor id for the printer
+    pub vendor_id: u16,
+    /// product id for the printer
+    pub product_id: u16,
+    /// Endpoint where the usb data is meant to be written to
+    pub endpoint_w: Option<u8>,
+    /// Endpoint where the usb data is meant to be read from
+    pub endpoint_r: Option<u8>,
+    /// Timeout for bulk write operations
+    pub timeout: std::time::Duration
 }
 
 /// Printer object
@@ -42,17 +53,25 @@ pub struct Printer {
 
 impl Printer {
     /// Creates the printer with the given details, from the printer details provided, and in the given USB context.
-    pub fn new(printer_profile: PrinterProfile) -> Result<Option<Printer>, Error> {
+    pub fn new(vendor_id: u16, product_id: u16) -> Result<Option<Printer>, Error> {
+        let printer_connection_data =  UsbConnectionData {
+            vendor_id,
+            product_id,
+            endpoint_w: None,
+            endpoint_r: None,
+            timeout: std::time::Duration::from_secs(2)
+        };
+
         // Quick check for the profile containing at least one font
                 let context = Context::new().map_err(Error::UsbError)?;
         
                 let devices = context.devices().map_err(Error::UsbError)?;
                 for device in devices.iter() {
                     let s = device.device_descriptor().map_err(Error::UsbError)?;
-                    if s.vendor_id() == printer_profile.printer_connection_data.vendor_id && s.product_id() == printer_profile.printer_connection_data.product_id {
+                    if s.vendor_id() == printer_connection_data.vendor_id && s.product_id() == printer_connection_data.product_id {
                         // Before opening the device, we must find the bulk endpoint
                         let config_descriptor = device.active_config_descriptor().map_err(Error::UsbError)?;
-                        let actual_endpoint = if let Some(endpoint_w) = printer_profile.printer_connection_data.endpoint_w {
+                        let actual_endpoint = if let Some(endpoint_w) = printer_connection_data.endpoint_w {
                             endpoint_w
                         } else {
                             let mut detected_endpoint: Option<u8> = None;
@@ -75,7 +94,7 @@ impl Printer {
 
                         };
 
-                        let actual_endpoint_r = if let Some(endpoint_r) = printer_profile.printer_connection_data.endpoint_r {
+                        let actual_endpoint_r = if let Some(endpoint_r) = printer_connection_data.endpoint_r {
                             endpoint_r
                         } else {
                             let mut detected_endpoint_r: Option<u8> = None;
@@ -118,7 +137,7 @@ impl Printer {
                                     Ok(_) => (),
                                     Err(e) => return Err(Error::UsbError(e))
                                 }
-                                let timeout = printer_profile.printer_connection_data.timeout;
+                                let timeout = printer_connection_data.timeout;
                                 return Ok(Some(Printer {
                                     printer_connection: PrinterConnection::Usb {
                                         endpoint: actual_endpoint,
