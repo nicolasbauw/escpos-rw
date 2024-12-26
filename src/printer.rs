@@ -4,7 +4,6 @@ use crate::Error;
 
 const OP_DELAY: u64 = 10;
 
-/// Keeps the actual living connection to the device
 enum PrinterConnection {
     Usb {
         /// Bulk write endpoint
@@ -18,7 +17,7 @@ enum PrinterConnection {
     }
 }
 
-pub struct UsbConnectionData {
+struct UsbConnectionData {
     /// Vendor id for the printer
     pub vendor_id: u16,
     /// product id for the printer
@@ -33,18 +32,14 @@ pub struct UsbConnectionData {
 
 /// Printer object
 ///
-/// The printer represents the thermal printer connected to the computer.
+/// The printer object represents the thermal printer.
 /// ```rust,no_run
-/// use escpos_rw::{Printer, PrinterModel};
+/// use escpos_rw::{Error, Printer};
 ///
-/// let printer = match Printer::new(PrinterModel::TMT20.usb_profile()) {
-///     Ok(maybe_printer) => match maybe_printer {
-///         Some(printer) => printer,
-///         None => panic!("No printer was found :(")
-///     },
-///     Err(e) => panic!("Error: {}", e)
-/// };
-/// // Now we have a printer
+/// let Some(printer) = Printer::new(0x04b8, 0x04b8)? else {
+///     return Err(escpos_rw::Error::PrinterError(
+///         "No printer found !".to_string(),
+///     ));
 /// ```
 pub struct Printer {
     /// Actual connection to the printer
@@ -52,7 +47,7 @@ pub struct Printer {
 }
 
 impl Printer {
-    /// Creates the printer with the given details, from the printer details provided, and in the given USB context.
+    /// Creates the printer with the given VID/PID
     pub fn new(vendor_id: u16, product_id: u16) -> Result<Option<Printer>, Error> {
         let printer_connection_data =  UsbConnectionData {
             vendor_id,
@@ -156,13 +151,9 @@ impl Printer {
     }
 
     /// Sends bytes to the printer
-    ///
     /// ```rust,no_run
-    /// use escpos_rw::{Printer,PrinterProfile};
-    /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
-    /// let printer = Printer::new(printer_profile).unwrap().unwrap();
-    /// printer.write_raw(&[0x01, 0x02])?;
-    /// # Ok::<(), escpos_rw::Error>(())
+    /// // Open the cash drawer
+    /// printer.write_raw([0x1B, 0x70, 0x00, 0x7E, 0x7E])?;
     /// ```
     pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
         match &self.printer_connection {
@@ -179,13 +170,9 @@ impl Printer {
     }
 
     /// Reads bytes from the printer
-    ///
     /// ```rust,no_run
-    /// use escpos_rw::{Printer,PrinterProfile};
-    /// let printer_profile = PrinterProfile::usb_builder(0x0001, 0x0001).build();
-    /// let printer = Printer::new(printer_profile).unwrap().unwrap();
-    /// let buffer = printer.read_raw()?;
-    /// # Ok::<(), escpos_rw::Error>(())
+    /// // Reads data from printer output buffer
+    /// printer.read_raw()?;
     /// ```
     pub fn read_raw(&self) -> Result<[u8; 20], Error> {
         match &self.printer_connection {

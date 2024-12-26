@@ -7,16 +7,14 @@
 //! 
 //! ```rust
 //! // VID/PID parameters
-//! let printer_details = PrinterProfile::usb_builder(0x04b8, 0x0202).build();
-//! // Creating the printer object
-//! let Some(printer) = Printer::new(printer_details)? else {
+//! let Some(printer) = Printer::new(0x04b8, 0x04b8)? else {
 //!     return Err(escpos_rw::Error::PrinterError(
 //!         "No printer found !".to_string(),
 //!     ));
 //! };
 //! ```
 
-pub use printer::{Printer, UsbConnectionData};
+pub use printer::Printer;
 pub use error::Error;
 
 mod printer;
