@@ -142,7 +142,6 @@ impl Printer {
                 // No printer was found with such vid and pid
                 Ok(None)
             },
-            PrinterConnectionData::Network{..} => panic!("Unsupported!"),
             PrinterConnectionData::Terminal => Ok(Some(Printer{
                 printer_connection: PrinterConnection::Terminal,
             }))

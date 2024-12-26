@@ -16,11 +16,6 @@ pub enum PrinterConnectionData {
         /// Timeout for bulk write operations
         timeout: std::time::Duration
     },
-    /// Network connection (not implemented yet)
-    Network {
-        _host: String,
-        _port: u16
-    },
     /// Terminal printer, used for really simple previews.
     Terminal
 }
