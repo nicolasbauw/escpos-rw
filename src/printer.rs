@@ -106,7 +106,7 @@ impl Printer {
                         // Now we continue opening the device
         
                         match device.open() {
-                            Ok(mut dh) => {
+                            Ok(dh) => {
                                 if let Ok(active) = dh.kernel_driver_active(0) {
                                     if active {
                                         // The kernel is active, we have to detach it
