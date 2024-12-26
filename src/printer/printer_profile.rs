@@ -1,5 +1,3 @@
-use crate::Error;
-
 /// Available connections with the printer
 ///
 /// Determines the kind of connection that will be sustained with the printer. At the moment, only Usb and Terminal are implemented. Try not to use this enum directly, use the builder pattern instead (using the [usb_builder](PrinterProfile::usb_builder) or [usb_builder](PrinterProfile::terminal_builder) methods. `network_builder` soon to be available).
@@ -77,8 +75,6 @@ impl PrinterProfile {
 pub struct PrinterProfileBuilder {
     /// The connection to the printer
     printer_connection_data: PrinterConnectionData,
-    /// Widtth, in dots, of the printer
-    width: u16
 }
 
 impl PrinterProfileBuilder {
@@ -102,7 +98,6 @@ impl PrinterProfileBuilder {
                 endpoint_r: None,
                 timeout: std::time::Duration::from_secs(2)
             },
-            width: 384
         }
     }
 
@@ -118,78 +113,6 @@ impl PrinterProfileBuilder {
     pub fn new_terminal() -> PrinterProfileBuilder {
         PrinterProfileBuilder {
             printer_connection_data: PrinterConnectionData::Terminal,
-            width: 384
-        }
-    }
-
-    /// Sets the usb endpoint to which the data will be written.
-    ///
-    /// ```rust
-    /// use escpos_rs::PrinterProfileBuilder;
-    /// // Creates the printer details with the endpoint 0x02
-    /// let printer_profile = PrinterProfileBuilder::new_usb(0x0001, 0x0001)
-    ///     .with_endpoint(0x02).unwrap()
-    ///     .build();
-    /// ```
-    pub fn with_endpoint(mut self, endpoint: u8) -> Result<PrinterProfileBuilder, Error> {
-        match &mut self.printer_connection_data {
-            PrinterConnectionData::Usb{endpoint_w: self_endpoint, ..} => {
-                *self_endpoint = Some(endpoint);
-                Ok(self)
-            },
-            _other => Err(Error::UnsupportedForPrinterConnection)
-        }
-    }
-
-    /// Sets the usb endpoint from which the data will be read.
-    ///
-    /// ```rust
-    /// use escpos_rs::PrinterProfileBuilder;
-    /// // Creates the printer details with the endpoint 0x82
-    /// let printer_profile = PrinterProfileBuilder::new_usb(0x0001, 0x0001)
-    ///     .with_read_endpoint(0x82).unwrap()
-    ///     .build();
-    /// ```
-    pub fn with_read_endpoint(mut self, endpoint_r: u8) -> Result<PrinterProfileBuilder, Error> {
-        match &mut self.printer_connection_data {
-            PrinterConnectionData::Usb{endpoint_r: self_endpoint, ..} => {
-                *self_endpoint = Some(endpoint_r);
-                Ok(self)
-            },
-            _other => Err(Error::UnsupportedForPrinterConnection)
-        }
-    }
-
-    /// Adds a specific pixel width for the printer (required for printing images)
-    ///
-    /// Defaults to 384, usually for 58mm printers.
-    /// ```rust
-    /// use escpos_rs::PrinterProfileBuilder;
-    /// let printer_profile = PrinterProfileBuilder::new_usb(0x0001, 0x0001)
-    ///     .with_width(384)
-    ///     .build();
-    /// ```
-    pub fn with_width(mut self, width: u16) -> PrinterProfileBuilder {
-        self.width = width;
-        self
-    }
-
-    /// Adds a bulk write timeout (usb only)
-    ///
-    /// USB devices might fail to write to the bulk endpoint. In such a case, a timeout must be provided to know when to stop waiting for the buffer to flush to the printer. The default value is 2 seconds.
-    /// ```rust
-    /// use escpos_rs::PrinterProfileBuilder;
-    /// let printer_profile = PrinterProfileBuilder::new_usb(0x0001, 0x0001)
-    ///     .with_timeout(std::time::Duration::from_secs(3)).unwrap()
-    ///     .build();
-    /// ```
-    pub fn with_timeout(mut self, timeout: std::time::Duration) -> Result<PrinterProfileBuilder, Error> {
-        match &mut self.printer_connection_data {
-            PrinterConnectionData::Usb{timeout: self_timeout, ..} => {
-                *self_timeout = timeout;
-                Ok(self)
-            },
-            _other => Err(Error::UnsupportedForPrinterConnection)
         }
     }
 
