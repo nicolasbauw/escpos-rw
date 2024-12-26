@@ -11,4 +11,3 @@ edition = "2021"
 
 [dependencies]
 rusb = "0.9.3"
-serde = {version = "1.0.117", features = ["derive"]}
