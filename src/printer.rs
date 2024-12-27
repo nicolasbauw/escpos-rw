@@ -28,8 +28,6 @@ struct UsbConnectionData {
     pub timeout: std::time::Duration
 }
 
-/// Printer object
-///
 /// The printer object represents the thermal printer.
 /// ```rust,no_run
 /// use escpos_rw::{Error, Printer};
@@ -38,6 +36,7 @@ struct UsbConnectionData {
 ///     return Err(escpos_rw::Error::PrinterError(
 ///         "No printer found !".to_string(),
 ///     ));
+/// }
 /// ```
 pub struct Printer {
     /// Actual connection to the printer
