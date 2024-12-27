@@ -5,6 +5,10 @@ Escpos-rw is a "low level" fork of escpos-rs, aiming at providing just the USB c
 - cleaning unused and unwanted code
 - adding read functions
 
+You can find ESC/POS Command Reference [here](https://download4.epson.biz/sec_pubs/pos/reference_en/escpos/).
+
+## Creating the printer object
+
 ```rust
 // Creating the printer object
     let Some(printer) = Printer::new(0x04b8, 0x0202)? else {
