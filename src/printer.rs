@@ -29,15 +29,6 @@ struct UsbConnectionData {
 }
 
 /// The printer object represents the thermal printer.
-/// ```rust,no_run
-/// use escpos_rw::{Error, Printer};
-///
-/// let Some(printer) = Printer::new(0x04b8, 0x04b8)? else {
-///     return Err(escpos_rw::Error::PrinterError(
-///         "No printer found !".to_string(),
-///     ));
-/// }
-/// ```
 pub struct Printer {
     /// Actual connection to the printer
     printer_connection: PrinterConnection,
@@ -45,6 +36,16 @@ pub struct Printer {
 
 impl Printer {
     /// Creates the printer with the given VID/PID
+    /// ```rust,no_run
+    /// use escpos_rw::{Error, Printer};
+    /// # fn main() -> Result<(), Error> {
+    /// let Some(printer) = Printer::new(0x04b8, 0x0202)? else {
+    ///     return Err(escpos_rw::Error::PrinterError(
+    ///         "No printer found !".to_string(),
+    ///     ));
+    /// };
+    /// # Ok(())}
+    /// ```
     pub fn new(vendor_id: u16, product_id: u16) -> Result<Option<Printer>, Error> {
         let printer_connection_data =  UsbConnectionData {
             vendor_id,
@@ -149,8 +150,18 @@ impl Printer {
 
     /// Sends bytes to the printer
     /// ```rust,no_run
+    /// # use escpos_rw::{Error, Printer};
+    /// # fn main() -> Result<(), Error> {
+    /// # use escpos_rw::{Error, Printer};
+    /// # let Some(printer) = Printer::new(0x04b8, 0x0202)? else {
+    /// # return Err(escpos_rw::Error::PrinterError(
+    /// #     "No printer found !".to_string(),
+    /// # ));
+    /// # };
     /// // Open the cash drawer
     /// printer.write_raw([0x1B, 0x70, 0x00, 0x7E, 0x7E])?;
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
         match &self.printer_connection {
@@ -168,8 +179,18 @@ impl Printer {
 
     /// Reads bytes from the printer
     /// ```rust,no_run
+    /// # use escpos_rw::{Error, Printer};
+    /// # fn main() -> Result<(), Error> {
+    /// # use escpos_rw::{Error, Printer};
+    /// # let Some(printer) = Printer::new(0x04b8, 0x0202)? else {
+    /// # return Err(escpos_rw::Error::PrinterError(
+    /// #     "No printer found !".to_string(),
+    /// # ));
+    /// # };
     /// // Reads data from printer output buffer
     /// printer.read_raw()?;
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn read_raw(&self) -> Result<[u8; 20], Error> {
         match &self.printer_connection {
