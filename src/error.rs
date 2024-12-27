@@ -14,10 +14,10 @@ impl std::fmt::Display for Error {
         let content = match self {
             Error::UsbError(e) => format!("rusb error: {}", e),
             Error::NoBulkEndpoint => "No bulk endpoint could be found".to_string(),
-            Error::PrinterError(detail) => format!("An error occured while printing, {}", detail)
+            Error::PrinterError(detail) => format!("An error occured while printing, {}", detail),
         };
         write!(formatter, "{}", content)
     }
 }
 
-impl std::error::Error for Error{}
+impl std::error::Error for Error {}
