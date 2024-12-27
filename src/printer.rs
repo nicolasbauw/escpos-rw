@@ -4,17 +4,15 @@ use crate::Error;
 
 const OP_DELAY: u64 = 10;
 
-enum PrinterConnection {
-    Usb {
-        /// Bulk write endpoint
-        endpoint: u8,
-        /// Bulk read endpoint
-        endpoint_r: u8,
-        /// Device handle
-        dh: DeviceHandle<Context>,
-        /// Time to wait before giving up writing to the bulk endpoint
-        timeout: std::time::Duration
-    }
+struct PrinterConnection {
+    /// Bulk write endpoint
+    endpoint: u8,
+    /// Bulk read endpoint
+    endpoint_r: u8,
+    /// Device handle
+    dh: DeviceHandle<Context>,
+    /// Time to wait before giving up writing to the bulk endpoint
+    timeout: std::time::Duration
 }
 
 struct UsbConnectionData {
@@ -134,7 +132,7 @@ impl Printer {
                                 }
                                 let timeout = printer_connection_data.timeout;
                                 return Ok(Some(Printer {
-                                    printer_connection: PrinterConnection::Usb {
+                                    printer_connection: PrinterConnection {
                                         endpoint: actual_endpoint,
                                         endpoint_r: actual_endpoint_r,
                                         dh,
@@ -157,7 +155,7 @@ impl Printer {
     /// ```
     pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
         match &self.printer_connection {
-            PrinterConnection::Usb{endpoint, endpoint_r: _, dh, timeout} => {
+            PrinterConnection {endpoint, endpoint_r: _, dh, timeout} => {
                 dh.write_bulk(
                     *endpoint,
                     bytes.as_ref(),
@@ -176,7 +174,7 @@ impl Printer {
     /// ```
     pub fn read_raw(&self) -> Result<[u8; 20], Error> {
         match &self.printer_connection {
-            PrinterConnection::Usb{endpoint: _, endpoint_r,dh, timeout} => {
+            PrinterConnection{endpoint: _, endpoint_r,dh, timeout} => {
                 let mut buffer: [u8; 20] = [0; 20];
                 dh.read_bulk(
                     *endpoint_r,
