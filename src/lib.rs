@@ -3,7 +3,7 @@
 //! escpos-rw is a "low level" fork of escpos-rs, aiming at providing the USB connection and read/write functions.
 //! - bug fixes
 //! - cleaning unused and unwanted code
-//! - adding read functions
+//! - adding read functionality
 
 pub use printer::Printer;
 pub use error::Error;

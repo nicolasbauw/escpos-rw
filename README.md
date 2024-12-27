@@ -3,7 +3,7 @@
 Escpos-rw is a "low level" fork of escpos-rs, aiming at providing just the USB connection and read/write functions.
 - bug fixes
 - cleaning unused and unwanted code
-- adding read functions
+- adding read functionality
 
 You can find ESC/POS Command Reference [here](https://download4.epson.biz/sec_pubs/pos/reference_en/escpos/).
 
