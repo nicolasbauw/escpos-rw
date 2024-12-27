@@ -170,18 +170,17 @@ impl Printer {
     /// # }
     /// ```
     pub fn write_raw<A: AsRef<[u8]>>(&self, bytes: A) -> Result<(), Error> {
-        match &self.printer_connection {
-            PrinterConnection {
+        let PrinterConnection {
                 endpoint,
                 endpoint_r: _,
                 dh,
                 timeout,
-            } => {
-                dh.write_bulk(*endpoint, bytes.as_ref(), *timeout)
-                    .map_err(Error::UsbError)?;
-                thread::sleep(Duration::from_millis(OP_DELAY));
-                Ok(())
-            }
+            } = &self.printer_connection;
+        {
+            dh.write_bulk(*endpoint, bytes.as_ref(), *timeout)
+                .map_err(Error::UsbError)?;
+            thread::sleep(Duration::from_millis(OP_DELAY));
+            Ok(())
         }
     }
 
@@ -201,18 +200,17 @@ impl Printer {
     /// # }
     /// ```
     pub fn read_raw(&self) -> Result<[u8; 128], Error> {
-        match &self.printer_connection {
-            PrinterConnection {
+        let PrinterConnection {
                 endpoint: _,
                 endpoint_r,
                 dh,
                 timeout,
-            } => {
-                let mut buffer: [u8; 128] = [0; 128];
-                dh.read_bulk(*endpoint_r, &mut buffer, *timeout)
-                    .map_err(Error::UsbError)?;
-                Ok(buffer)
-            }
+            } = &self.printer_connection;
+        {
+            let mut buffer: [u8; 128] = [0; 128];
+            dh.read_bulk(*endpoint_r, &mut buffer, *timeout)
+                .map_err(Error::UsbError)?;
+            Ok(buffer)
         }
     }
 }
