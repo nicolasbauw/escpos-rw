@@ -192,10 +192,10 @@ impl Printer {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn read_raw(&self) -> Result<[u8; 20], Error> {
+    pub fn read_raw(&self) -> Result<[u8; 128], Error> {
         match &self.printer_connection {
             PrinterConnection{endpoint: _, endpoint_r,dh, timeout} => {
-                let mut buffer: [u8; 20] = [0; 20];
+                let mut buffer: [u8; 128] = [0; 128];
                 dh.read_bulk(
                     *endpoint_r,
                     &mut buffer,
