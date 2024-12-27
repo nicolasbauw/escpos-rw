@@ -6,17 +6,15 @@ Escpos-rw is a "low level" fork of escpos-rs, aiming at providing just the USB c
 - adding read functions
 
 ```rust
-    // VID/PID parameters
-    let printer_details = PrinterProfile::usb_builder(0x04b8, 0x0202).build();
-    // Creating the printer object
-    let Some(printer) = Printer::new(printer_details)? else {
+// Creating the printer object
+    let Some(printer) = Printer::new(0x04b8, 0x0202)? else {
         return Err(escpos_rw::Error::PrinterError(
             "No printer found !".to_string(),
         ));
     };
 ```
 
-## Sending raw information
+## Sending data
 
 The printer object has a `write_raw` method...
 
@@ -25,7 +23,7 @@ The printer object has a `write_raw` method...
 printer.write_raw([0x1B, 0x70, 0x00, 0x7E, 0x7E])?;
 ```
 
-## Reading raw information
+## Reading data
 
 ...and a `read_raw` method:
 
