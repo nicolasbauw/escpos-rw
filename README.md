@@ -1,6 +1,6 @@
 # escpos-rw: USB communication with ESC/POS (Epson) thermal printers
 
-Escpos-rw is a "low level" fork of escpos-rs, aiming at providing just the USB connection and read/write functions.
+Escpos-rw is a "low level" fork of escpos-rs, aiming at providing the USB connection and read/write functions.
 - bug fixes
 - cleaning unused and unwanted code
 - adding read functionality
