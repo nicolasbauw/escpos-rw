@@ -3,6 +3,7 @@ name = "escpos-rw"
 version = "1.0.0"
 license = "MIT"
 description = "Low level communication with esc/pos printers"
+keywords = ["usb", "escpos", "thermal", "printer"]
 repository = "https://github.com/nicolasbauw/escpos-rw"
 authors = ["Nicolas BAUW <nbauw@hotmail.com>"]
 edition = "2021"
