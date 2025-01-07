@@ -1,6 +1,6 @@
 [package]
 name = "escpos-rw"
-version = "0.9.0"
+version = "1.0.0"
 license = "MIT"
 description = "Low level communication with esc/pos"
 repository = "https://github.com/nicolasbauw/escpos-rw"
